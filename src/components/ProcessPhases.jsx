@@ -1,15 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-interface PhaseData {
-  phase: string;
-  title: string;
-  status: 'completed' | 'active' | 'pending';
-  description: string;
-  details: string[];
-}
-
-const phases: PhaseData[] = [
+const phases = [
   {
     phase: "Phase 1",
     title: "AM Design",
@@ -89,7 +81,7 @@ const phases: PhaseData[] = [
 ];
 
 const ProcessPhases = () => {
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
         return 'bg-green-100 text-green-800';

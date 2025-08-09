@@ -1,15 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDown, ArrowRight } from "lucide-react";
 
-interface WorkflowStep {
-  id: string;
-  title: string;
-  type: 'process' | 'data' | 'decision';
-  connections: string[];
-  position: { x: number; y: number };
-}
-
-const workflowSteps: WorkflowStep[] = [
+const workflowSteps = [
   { id: 'design-req', title: 'Design Requirements', type: 'data', connections: ['cad-model'], position: { x: 0, y: 0 } },
   { id: 'cad-model', title: 'CAD Model', type: 'process', connections: ['process-plan'], position: { x: 1, y: 0 } },
   { id: 'process-plan', title: 'Process Planning', type: 'process', connections: ['build-model'], position: { x: 2, y: 0 } },

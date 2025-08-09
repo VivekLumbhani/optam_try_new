@@ -13,22 +13,7 @@ import {
   ClipboardCheck
 } from "lucide-react";
 
-interface ProcessStep {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
-  description: string;
-  status: 'completed' | 'active' | 'pending';
-  data: {
-    parameters: { name: string; value: string; unit?: string }[];
-    metrics: { name: string; value: string; status: 'good' | 'warning' | 'critical' }[];
-    files: { name: string; type: string; size: string }[];
-  };
-}
-
-const processSteps: ProcessStep[] = [
+const processSteps = [
   {
     id: 'design',
     title: 'Design',
@@ -175,9 +160,9 @@ const processIcons = [
 ];
 
 const DigitalThreadChart = () => {
-  const [selectedStep, setSelectedStep] = useState<ProcessStep>(processSteps[2]); // Default to active printing step
+  const [selectedStep, setSelectedStep] = useState(processSteps[2]); // Default to active printing step
 
-  const handleStepClick = (step: ProcessStep) => {
+  const handleStepClick = (step) => {
     setSelectedStep(step);
   };
 
