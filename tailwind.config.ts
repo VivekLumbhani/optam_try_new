@@ -52,6 +52,25 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// AM Dashboard Colors
+				'am-red': {
+					DEFAULT: 'hsl(var(--am-red))',
+					foreground: 'hsl(var(--am-red-foreground))'
+				},
+				'am-dark': {
+					DEFAULT: 'hsl(var(--am-dark))',
+					foreground: 'hsl(var(--am-dark-foreground))'
+				},
+				'am-gray': {
+					DEFAULT: 'hsl(var(--am-gray))',
+					dark: 'hsl(var(--am-gray-dark))'
+				},
+				// Process Colors
+				'process-design': 'hsl(var(--process-design))',
+				'process-simulation': 'hsl(var(--process-simulation))',
+				'process-printing': 'hsl(var(--process-printing))',
+				'process-post': 'hsl(var(--process-post))',
+				'process-inspection': 'hsl(var(--process-inspection))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
