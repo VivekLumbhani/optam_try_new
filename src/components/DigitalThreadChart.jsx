@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   FileCode2, 
   Play, 
@@ -10,7 +10,12 @@ import {
   FileText,
   Layers,
   TrendingUp,
-  ClipboardCheck
+  ClipboardCheck,
+  Zap,
+  Activity,
+  Database,
+  ArrowRight,
+  Signal
 } from "lucide-react";
 
 const processSteps = [
@@ -151,148 +156,384 @@ const processSteps = [
   }
 ];
 
-const processIcons = [
-  <Layers className="h-12 w-12" />,
-  <FileText className="h-12 w-12" />,
-  <BarChart3 className="h-12 w-12" />,
-  <TrendingUp className="h-12 w-12" />,
-  <ClipboardCheck className="h-12 w-12" />
-];
-
 const DigitalThreadChart = () => {
-  const [selectedStep, setSelectedStep] = useState(processSteps[2]); // Default to active printing step
+  const [selectedStep, setSelectedStep] = useState(processSteps[2]);
+  const [dataFlow, setDataFlow] = useState(0);
+  const [realTimeData, setRealTimeData] = useState({
+    currentLayer: 1247,
+    progress: 59.4,
+    temperature: 82.3,
+    speed: 1180
+  });
+  const [pulseActive, setPulseActive] = useState(true);
+
+  // Simulate real-time data updates for active printing
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (selectedStep.status === 'active') {
+        setRealTimeData(prev => ({
+          currentLayer: prev.currentLayer + Math.floor(Math.random() * 3),
+          progress: Math.min(prev.progress + (Math.random() * 0.5), 100),
+          temperature: 82.3 + (Math.random() - 0.5) * 2,
+          speed: 1180 + (Math.random() - 0.5) * 50
+        }));
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [selectedStep.status]);
+
+  // Data flow animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDataFlow(prev => (prev + 1) % 100);
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Pulse animation control
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseActive(prev => !prev);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleStepClick = (step) => {
     setSelectedStep(step);
   };
 
+  const getConnectionAnimation = (index) => {
+    const delay = index * 200;
+    return {
+      animation: `dataFlow 3s linear infinite`,
+      animationDelay: `${delay}ms`
+    };
+  };
+
   return (
     <div className="w-full space-y-8">
-      {/* Digital Thread Visualization */}
-      <div className="bg-white rounded-lg border p-8">
-        {/* Digital Thread Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-wider">
-            <span className="text-am-dark">DIGITAL</span>{" "}
-            <span className="text-am-red bg-am-red/10 px-3 py-1 rounded">THREAD</span>
-          </h1>
-        </div>
+      <style jsx>{`
+        @keyframes dataFlow {
+          0% { 
+            background-position: 0% 50%;
+            opacity: 0.3;
+          }
+          50% { 
+            opacity: 1;
+          }
+          100% { 
+            background-position: 100% 50%;
+            opacity: 0.3;
+          }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { 
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            transform: scale(1);
+          }
+          50% { 
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            transform: scale(1.05);
+          }
+        }
+        
+        @keyframes glow {
+          0%, 100% { 
+            filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5));
+          }
+          50% { 
+            filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.8));
+          }
+        }
 
-        {/* Interactive Process Flow */}
-        <div className="relative">
-          {/* Main Timeline with Clickable Steps */}
-          <div className="flex items-center justify-between mb-8">
+        .data-flow {
+          background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(239, 68, 68, 0.3) 25%, 
+            rgba(239, 68, 68, 0.8) 50%, 
+            rgba(239, 68, 68, 0.3) 75%, 
+            transparent 100%
+          );
+          background-size: 200% 100%;
+        }
+
+        .connection-line {
+          background: linear-gradient(90deg,
+            #ef4444 0%,
+            #dc2626 25%,
+            #ef4444 50%,
+            #dc2626 75%,
+            #ef4444 100%
+          );
+          background-size: 200% 100%;
+          animation: dataFlow 2s ease-in-out infinite;
+        }
+
+        .active-glow {
+          animation: glow 2s ease-in-out infinite;
+        }
+
+        .pulse-ring {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
+
+      <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border shadow-xl p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold tracking-wider mb-4">
+            <span className="text-am-dark">DIGITAL</span>{" "}
+            <span className="text-am-red bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent px-3 py-1">THREAD</span>
+          </h1>
+          
+          {/* Live Status Indicator */}
+          <div className="flex items-center justify-center space-x-2 text-sm">
+            <div className="flex items-center space-x-1">
+              <Signal className="h-4 w-4 text-green-500" />
+              <span className="text-gray-600">Live Data Stream</span>
+            </div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+        
+        <div className="relative mb-12">
+          {/* Enhanced Process Steps with Interconnections */}
+          <div className="flex items-center justify-between mb-8 relative">
             {processSteps.map((step, index) => (
-              <div key={step.id} className="flex flex-col items-center relative">
-                {/* Clickable Step Button */}
+              <div key={step.id} className="flex flex-col items-center relative group">
+                {/* Data Transfer Indicators */}
+                {step.status === 'active' && (
+                  <div className="absolute -top-2 -right-2 z-20">
+                    <Activity className="h-4 w-4 text-red-500 animate-pulse" />
+                  </div>
+                )}
+                
+                {/* Clickable Step Button with Enhanced Effects */}
                 <button
                   onClick={() => handleStepClick(step)}
-                  className={`${step.bgColor} ${step.color} px-6 py-3 rounded-lg font-semibold text-sm mb-4 relative z-10 transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                    selectedStep.id === step.id ? 'ring-2 ring-am-red ring-offset-2' : ''
-                  }`}
+                  className={`${step.bgColor} ${step.color} px-6 py-4 rounded-xl font-semibold text-sm mb-6 relative z-10 transition-all duration-300 hover:scale-110 hover:shadow-2xl transform ${
+                    selectedStep.id === step.id ? 'ring-4 ring-am-red ring-offset-4 scale-105' : ''
+                  } ${step.status === 'active' ? 'active-glow pulse-ring' : ''} group-hover:shadow-lg`}
                 >
-                  {step.title}
+                  <div className="flex items-center space-x-2">
+                    {step.icon}
+                    <span>{step.title}</span>
+                  </div>
+                  
+                  {/* Real-time Progress Bar for Active Step */}
+                  {step.status === 'active' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 rounded-b-xl overflow-hidden">
+                      <div 
+                        className="h-full bg-white transition-all duration-1000"
+                        style={{ width: `${realTimeData.progress}%` }}
+                      />
+                    </div>
+                  )}
                 </button>
                 
-                {/* Connection Line */}
+                {/* Enhanced Connection Lines with Data Flow Animation */}
                 {index < processSteps.length - 1 && (
-                  <div className="absolute top-6 left-full w-full h-0.5 bg-am-red transform translate-x-0 z-0" 
-                       style={{ width: '100%' }} />
+                  <div className="absolute top-8 left-full w-full flex items-center z-0" 
+                       style={{ width: 'calc(100% - 4rem)' }}>
+                    {/* Main connection line */}
+                    <div className="h-1 flex-1 connection-line rounded-full" />
+                    
+                    {/* Data packet indicators */}
+                    <div className="absolute inset-0 flex items-center">
+                      {[...Array(3)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-3 h-3 bg-red-500 rounded-full shadow-lg"
+                          style={{
+                            animation: `dataFlow 3s linear infinite`,
+                            animationDelay: `${i * 1000}ms`,
+                            position: 'absolute',
+                            left: `${(dataFlow + i * 33) % 100}%`
+                          }}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Arrow indicator */}
+                    <ArrowRight className="h-4 w-4 text-red-500 ml-2 animate-pulse" />
+                  </div>
                 )}
+
+                {/* Data Node Indicator */}
+                <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
+                  <Database className={`h-6 w-6 ${
+                    step.status === 'completed' ? 'text-green-500' : 
+                    step.status === 'active' ? 'text-red-500 animate-pulse' : 
+                    'text-gray-400'
+                  }`} />
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Progress Dots */}
+          {/* Enhanced Progress Timeline */}
           <div className="flex items-center justify-between relative">
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-am-red transform -translate-y-1/2" />
+            <div className="absolute top-1/2 left-0 right-0 h-2 bg-gradient-to-r from-red-500 via-red-600 to-gray-300 rounded-full transform -translate-y-1/2 overflow-hidden">
+              {/* Animated progress indicator */}
+              <div className="h-full data-flow" />
+            </div>
+            
             {processSteps.map((step, index) => (
               <div key={`dot-${step.id}`} className="relative z-10">
-                <div className={`w-4 h-4 rounded-full cursor-pointer transition-all ${
-                  step.status === 'completed' ? 'bg-am-red' : 
-                  step.status === 'active' ? 'bg-am-red animate-pulse' : 
-                  'bg-am-gray'
-                } ${selectedStep.id === step.id ? 'scale-125' : ''}`} 
-                     onClick={() => handleStepClick(step)} />
+                <div className={`w-6 h-6 rounded-full cursor-pointer transition-all duration-300 border-2 border-white shadow-lg ${
+                  step.status === 'completed' ? 'bg-green-500 hover:scale-125' : 
+                  step.status === 'active' ? 'bg-red-500 animate-pulse pulse-ring hover:scale-125' : 
+                  'bg-gray-400 hover:scale-110'
+                } ${selectedStep.id === step.id ? 'scale-150 ring-2 ring-white ring-offset-2' : ''}`} 
+                     onClick={() => handleStepClick(step)}>
+                  
+                  {/* Activity indicator for active step */}
+                  {step.status === 'active' && (
+                    <div className="absolute inset-0 rounded-full">
+                      <Zap className="h-3 w-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Data Display Section */}
-      <div className="bg-white rounded-lg border p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-am-dark mb-2">
-            {selectedStep.title} - {selectedStep.description}
-          </h2>
-          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-            selectedStep.status === 'completed' ? 'bg-green-100 text-green-800' :
-            selectedStep.status === 'active' ? 'bg-am-red/10 text-am-red' :
-            'bg-am-gray/50 text-am-gray-dark'
-          }`}>
-            {selectedStep.status.charAt(0).toUpperCase() + selectedStep.status.slice(1)}
+      {/* Enhanced Data Display Section */}
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border shadow-xl p-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-3xl font-bold text-am-dark">
+              {selectedStep.title} - {selectedStep.description}
+            </h2>
+            
+            {/* Real-time Status Badge */}
+            <div className="flex items-center space-x-3">
+              {selectedStep.status === 'active' && (
+                <div className="flex items-center space-x-2 px-3 py-1 bg-red-50 rounded-full">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="text-red-700 text-sm font-medium">Live</span>
+                </div>
+              )}
+              
+              <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                selectedStep.status === 'completed' ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' :
+                selectedStep.status === 'active' ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 shadow-md' :
+                'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700'
+              }`}>
+                {selectedStep.status.charAt(0).toUpperCase() + selectedStep.status.slice(1)}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Parameters */}
-          <div>
-            <h3 className="text-lg font-semibold text-am-dark mb-4 border-b border-am-gray pb-2">
-              Process Parameters
-            </h3>
-            <div className="space-y-3">
-              {selectedStep.data.parameters.map((param, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <span className="text-am-gray-dark">{param.name}:</span>
-                  <span className="font-medium text-am-dark">
-                    {param.value} {param.unit && <span className="text-am-gray-dark">{param.unit}</span>}
-                  </span>
-                </div>
-              ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Enhanced Parameters Section */}
+          <div className="bg-white rounded-xl p-6 shadow-md border">
+            <div className="flex items-center space-x-2 mb-6">
+              <BarChart3 className="h-6 w-6 text-blue-500" />
+              <h3 className="text-xl font-semibold text-am-dark">Process Parameters</h3>
             </div>
-          </div>
-
-          {/* Metrics */}
-          <div>
-            <h3 className="text-lg font-semibold text-am-dark mb-4 border-b border-am-gray pb-2">
-              Status & Metrics
-            </h3>
-            <div className="space-y-3">
-              {selectedStep.data.metrics.map((metric, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <span className="text-am-gray-dark">{metric.name}:</span>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-am-dark">{metric.value}</span>
-                    <div className={`w-2 h-2 rounded-full ${
-                      metric.status === 'good' ? 'bg-green-500' :
-                      metric.status === 'warning' ? 'bg-yellow-500' :
-                      'bg-red-500'
-                    }`} />
+            <div className="space-y-4">
+              {selectedStep.data.parameters.map((param, index) => (
+                <div key={index} className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700 font-medium">{param.name}:</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-bold text-am-dark text-lg">
+                        {param.name === 'Current Layer' && selectedStep.status === 'active' ? 
+                          realTimeData.currentLayer : 
+                         param.name === 'Build Progress' && selectedStep.status === 'active' ? 
+                          realTimeData.progress.toFixed(1) :
+                         param.name === 'Chamber Temp' && selectedStep.status === 'active' ? 
+                          realTimeData.temperature.toFixed(1) :
+                         param.name === 'Print Speed' && selectedStep.status === 'active' ? 
+                          realTimeData.speed :
+                          param.value
+                        }
+                      </span>
+                      {param.unit && <span className="text-gray-500 text-sm">{param.unit}</span>}
+                      {selectedStep.status === 'active' && index < 2 && (
+                        <TrendingUp className="h-4 w-4 text-green-500" />
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Files */}
-          <div>
-            <h3 className="text-lg font-semibold text-am-dark mb-4 border-b border-am-gray pb-2">
-              Associated Files
-            </h3>
+          {/* Enhanced Metrics Section */}
+          <div className="bg-white rounded-xl p-6 shadow-md border">
+            <div className="flex items-center space-x-2 mb-6">
+              <Activity className="h-6 w-6 text-green-500" />
+              <h3 className="text-xl font-semibold text-am-dark">Status & Metrics</h3>
+            </div>
+            <div className="space-y-4">
+              {selectedStep.data.metrics.map((metric, index) => (
+                <div key={index} className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700 font-medium">{metric.name}:</span>
+                    <div className="flex items-center space-x-3">
+                      <span className="font-bold text-am-dark">{metric.value}</span>
+                      <div className={`w-4 h-4 rounded-full relative ${
+                        metric.status === 'good' ? 'bg-green-500' :
+                        metric.status === 'warning' ? 'bg-yellow-500' :
+                        'bg-red-500'
+                      }`}>
+                        {metric.status === 'good' && selectedStep.status === 'active' && (
+                          <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Enhanced Files Section */}
+          <div className="bg-white rounded-xl p-6 shadow-md border">
+            <div className="flex items-center space-x-2 mb-6">
+              <FileText className="h-6 w-6 text-purple-500" />
+              <h3 className="text-xl font-semibold text-am-dark">Associated Files</h3>
+            </div>
             <div className="space-y-3">
               {selectedStep.data.files.map((file, index) => (
-                <div key={index} className="p-3 border border-am-gray rounded-lg hover:bg-am-gray/20 transition-colors cursor-pointer">
+                <div key={index} className="p-4 border-2 border-gray-200 rounded-xl hover:border-red-300 hover:bg-red-50 transition-all cursor-pointer group">
                   <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium text-am-dark text-sm">{file.name}</p>
-                      <p className="text-xs text-am-gray-dark">{file.type}</p>
+                    <div className="flex-1">
+                      <p className="font-semibold text-am-dark text-sm group-hover:text-red-700">{file.name}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">{file.type}</span>
+                        <span className="text-xs text-gray-500">{file.size}</span>
+                      </div>
                     </div>
-                    <span className="text-xs text-am-gray-dark">{file.size}</span>
+                    {selectedStep.status === 'active' && index === 0 && (
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    )}
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Data Interconnection Visualization */}
+        <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <Database className="h-5 w-5 mr-2 text-blue-500" />
+            Real-time Data Interconnections
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {['CAD → Simulation', 'Simulation → Print', 'Print → Monitor', 'Monitor → QC'].map((connection, index) => (
+              <div key={index} className="flex items-center space-x-2 p-2 bg-white rounded-lg shadow-sm">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-gray-700">{connection}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
