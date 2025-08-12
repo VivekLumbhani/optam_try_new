@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => ({
     // componentTagger(),
   ]
   .filter(Boolean),
+  base:"/optam_try_new",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
