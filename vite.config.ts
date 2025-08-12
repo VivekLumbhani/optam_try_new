@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   
-  // base:"/design_dashboard",
+  base:"/design_dashboard/",
   plugins: [
     react(),
     // mode === 'development' &&
